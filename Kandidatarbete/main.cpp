@@ -43,6 +43,12 @@ int main()
 		{
 			switch (event.type)
 			{
+				case sf::Event::MouseButtonPressed:
+					if (event.mouseButton.button == sf::Mouse::Left)
+					{
+						std::cout << event.mouseButton.x << " " << event.mouseButton.y << '\n';
+					}
+					break;
 				case sf::Event::Closed:
 					window.close();
 					break;
