@@ -6,8 +6,8 @@ Voronoi* vdg;
 vector<VoronoiPoint*> ver;
 vector<VEdge> edges;
 
-void handleImpact(int x, int y, sf::Vector2f force);
-sf::Vector2f calculateImpactFactor(sf::Vector2f cell, sf::Vector2f impactPoint, sf::Vector2f force);
+void handleImpact(int x, int y, float force);
+float calculateImpactFactor(sf::Vector2f cell, sf::Vector2f impactPoint, float force);
 bool isCracked(sf::Vector2f i1, sf::Vector2f i2, float durability);
 float norm(sf::Vector2f v1, sf::Vector2f v2);
 
@@ -74,7 +74,7 @@ int main()
 	return 0; 
 }
 
-void handleImpact(int x, int y, sf::Vector2f force)
+void handleImpact(int x, int y, float force)
 {
 	// find points near the impact point
 	// loop related cells calculate the impact force
@@ -85,13 +85,13 @@ void handleImpact(int x, int y, sf::Vector2f force)
 
 	sf::Vector2f impactPoint = sf::Vector2f(x, y);
 
-	sf::Vector2f impactFactor1 = calculateImpactFactor(cell1, impactPoint, force);
-	sf::Vector2f impactFactor2 = calculateImpactFactor(cell2, impactPoint, force);
+	float impactFactor1 = calculateImpactFactor(cell1, impactPoint, force);
+	float impactFactor2 = calculateImpactFactor(cell2, impactPoint, force);
 
-	isCracked(impactFactor2, impactFactor2);
+	isCracked(impactFactor2, impactFactor2, 1);
 }
 
-sf::Vector2f calculateImpactFactor(sf::Vector2f cell, sf::Vector2f impactPoint, sf::Vector2f force)
+float calculateImpactFactor(sf::Vector2f cell, sf::Vector2f impactPoint, float force)
 {
 	sf::Vector2f cell = sf::Vector2f(0, 0);
 
@@ -100,11 +100,9 @@ sf::Vector2f calculateImpactFactor(sf::Vector2f cell, sf::Vector2f impactPoint, 
 	return force / (distance + 1);
 }
 
-bool isCracked(sf::Vector2f i1, sf::Vector2f i2, float durability)
+bool isCracked(float i1, float i2, float durability)
 {
-	float distance = norm(i1, i2);
-
-	if (distance > durability) return true;
+	if (abs(i1 - i2) > durability) return true;
 	
 	return false;
 }
