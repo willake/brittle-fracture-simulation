@@ -33,6 +33,22 @@ public:
 		// TODO: fit the voronoi diagram to the fragment structure as the paper
 	}
 
+	void integrateVelocity(double timeStep)
+	{
+
+	}
+
+	void integratePosition(double timeStep)
+	{
+		// update fragement edges and cells according to velocity and timestep
+	}
+
+	void intergrate(double timeStep)
+	{
+		integrateVelocity(timeStep);
+		integratePosition(timeStep);
+	}
+
 	void handleImpact(const int x, const int y, const float force)
 	{
 		// find points near the impact point

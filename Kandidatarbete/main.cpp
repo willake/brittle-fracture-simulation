@@ -4,6 +4,9 @@
 
 Scene scene;
 
+// https://www.sfml-dev.org/tutorials/2.5/system-time.php
+sf::Clock gameClock;
+
 void drawScene(sf::RenderWindow &window, Scene scene);
 
 int main()
@@ -35,6 +38,8 @@ int main()
 
 		}
 
+		sf::Time elapsed = gameClock.restart();
+		scene.intergrate(elapsed.asSeconds());
 		drawScene(window, scene);
 	}
 

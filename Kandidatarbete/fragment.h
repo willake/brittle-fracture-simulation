@@ -33,6 +33,7 @@ public:
 	vector<Cell> cells = vector<Cell>();
 	Material material = Material(1, 1);
 	float mass = 1;
+	sf::Vector2f velocity;
 	void merge(Fragment fragment)
 	{
 		this->cells.insert(this->cells.end(), fragment.cells.begin(), fragment.cells.end());
