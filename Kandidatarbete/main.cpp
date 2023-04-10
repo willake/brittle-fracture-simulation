@@ -54,6 +54,7 @@ int main()
 					if (event.mouseButton.button == sf::Mouse::Left)
 					{
 						std::cout << event.mouseButton.x << " " << event.mouseButton.y << '\n';
+						handleImpact(event.mouseButton.x, event.mouseButton.y, 10);
 					}
 					break;
 				case sf::Event::Closed:
