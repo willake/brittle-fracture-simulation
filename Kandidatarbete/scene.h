@@ -29,6 +29,8 @@ public:
 		double maxY = 500;
 		edges = vdg->ComputeVoronoiGraph(ver, minY, maxY);
 		delete vdg;
+
+		// TODO: fit the voronoi diagram to the fragment structure as the paper
 	}
 
 	void handleImpact(const int x, const int y, const float force)
