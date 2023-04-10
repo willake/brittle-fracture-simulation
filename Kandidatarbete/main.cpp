@@ -1,14 +1,16 @@
 
 #include <SFML/Graphics.hpp>
 #include "voronoi.h"
+#include "fragment.h"
 
 Voronoi* vdg;
 vector<VoronoiPoint*> ver;
 vector<VEdge> edges;
 
 void handleImpact(int x, int y, float force);
-float calculateImpactFactor(sf::Vector2f cell, sf::Vector2f impactPoint, float force);
-bool isCracked(sf::Vector2f i1, sf::Vector2f i2, float durability);
+void shatterFragment(Fragment fragment, sf::Vector2f impactPoint, float force);
+Fragment extractSubfragment(Cell cell, sf::Vector2f impactPoint, float force, Material material);
+float shatterFactor(Cell* cell, sf::Vector2f impactPoint, float force, Material material);
 float norm(sf::Vector2f v1, sf::Vector2f v2);
 
 int main()
@@ -77,34 +79,69 @@ int main()
 void handleImpact(int x, int y, float force)
 {
 	// find points near the impact point
-	// loop related cells calculate the impact force
-	
-	// should remove this
-	sf::Vector2f cell1 = sf::Vector2f(0, 0);
-	sf::Vector2f cell2 = sf::Vector2f(0, 0);
-
-	sf::Vector2f impactPoint = sf::Vector2f(x, y);
-
-	float impactFactor1 = calculateImpactFactor(cell1, impactPoint, force);
-	float impactFactor2 = calculateImpactFactor(cell2, impactPoint, force);
-
-	isCracked(impactFactor2, impactFactor2, 1);
+	// call shatter fragment
 }
 
-float calculateImpactFactor(sf::Vector2f cell, sf::Vector2f impactPoint, float force)
+void shatterFragment(Fragment fragment, sf::Vector2f impactPoint, float force)
 {
-	sf::Vector2f cell = sf::Vector2f(0, 0);
+	for (int i = 0; i < fragment.cells.size(); i++)
+	{
+		Cell cell = fragment.cells[i];
+		cell.visited = false;
+		for (int j = 0; j < cell.neighbours.size(); j++)
+		{
+			if (cell.neighbours[j]->fragment == &fragment)
+			{
+				// remove n from s.neighbours
+			}
+		}
+	}
+	vector<Fragment> L = vector<Fragment>();
 
-	float distance = norm(cell, impactPoint);
-
-	return force / (distance + 1);
+	for (int i = 0; i < fragment.cells.size(); i++)
+	{
+		Cell cell = fragment.cells[i];
+		if (cell.visited == false)
+		{
+			Fragment R = extractSubfragment(cell, impactPoint, force, fragment.material);
+			// copy any additional properties from original fragment to new fragment
+			R.mass = fragment.mass;
+			R.material = fragment.material;
+			L.push_back(R);
+		}
+	}
 }
 
-bool isCracked(float i1, float i2, float durability)
+Fragment extractSubfragment(Cell cell, sf::Vector2f impactPoint, float force, Material material)
 {
-	if (abs(i1 - i2) > durability) return true;
-	
-	return false;
+	cell.visited = true;
+	Fragment R = Fragment();
+	R.material = material;
+	R.cells.push_back(cell);
+	cell.fragment = &R;
+
+	for (int i = 0; i < cell.neighbours.size(); i++)
+	{
+		float factorA = shatterFactor(&cell, impactPoint, force, material);
+		float factorB = shatterFactor(cell.neighbours[i], impactPoint, force, material);
+		
+		if (abs(factorA - factorB) > material.durability)
+		{
+			R.merge(extractSubfragment(*cell.neighbours[i], impactPoint, force, material));
+		}
+
+	}
+
+	return R;
+}
+
+float shatterFactor(Cell *cell, sf::Vector2f impactPoint, float force, Material material)
+{
+	sf::Vector2f site = cell->site;
+
+	float distance = norm(site, impactPoint);
+
+	return force / (pow(distance, material.shatterLocality) + 1);
 }
 
 float norm(sf::Vector2f v1, sf::Vector2f v2)

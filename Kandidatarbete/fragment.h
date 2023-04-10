@@ -11,22 +11,37 @@ using namespace std;
 class Fragment
 {
 public:
-	vector<Cell> cells;
-	Material material;
+	Fragment()
+	{
+	}
+	vector<Cell> cells = vector<Cell>();
+	Material material = Material(1, 1);
+	float mass = 1;
+	void merge(Fragment fragment)
+	{
+
+	}
 private:
 };
 
 class Cell
 {
 public:
+	Cell(sf::Vector2f site, vector<Cell*> neighbours, Fragment* fragment)
+	{
+		this->site = site;
+		this->neighbours = neighbours;
+		this->fragment = fragment;
+	}
 	sf::Vector2f site;
 	// faces?
 	vector<Cell*> neighbours;
+	Fragment* fragment;
 	bool visited;
 private:
 };
 
-class Material
+struct Material
 {
 public:
 	Material(float shatterLocality, float durability) 
