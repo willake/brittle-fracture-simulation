@@ -5,6 +5,12 @@
 Voronoi* vdg;
 vector<VoronoiPoint*> ver;
 vector<VEdge> edges;
+
+void handleImpact(int x, int y, sf::Vector2f force);
+sf::Vector2f calculateImpactFactor(sf::Vector2f cell, sf::Vector2f impactPoint, sf::Vector2f force);
+bool isCracked(sf::Vector2f i1, sf::Vector2f i2, float durability);
+float norm(sf::Vector2f v1, sf::Vector2f v2);
+
 int main()
 {
 	//FORTUNES ALGORITHM
@@ -17,8 +23,7 @@ int main()
 		ver.push_back(new VoronoiPoint(rand() % 500, rand() % 500));
 	}
 
-
-
+	// generate voronoi diagram
 	vdg = new Voronoi();
 	double minY = 0;
 	double maxY = 500;
@@ -67,4 +72,45 @@ int main()
 	}
 
 	return 0; 
+}
+
+void handleImpact(int x, int y, sf::Vector2f force)
+{
+	// find points near the impact point
+	// loop related cells calculate the impact force
+	
+	// should remove this
+	sf::Vector2f cell1 = sf::Vector2f(0, 0);
+	sf::Vector2f cell2 = sf::Vector2f(0, 0);
+
+	sf::Vector2f impactPoint = sf::Vector2f(x, y);
+
+	sf::Vector2f impactFactor1 = calculateImpactFactor(cell1, impactPoint, force);
+	sf::Vector2f impactFactor2 = calculateImpactFactor(cell2, impactPoint, force);
+
+	isCracked(impactFactor2, impactFactor2);
+}
+
+sf::Vector2f calculateImpactFactor(sf::Vector2f cell, sf::Vector2f impactPoint, sf::Vector2f force)
+{
+	sf::Vector2f cell = sf::Vector2f(0, 0);
+
+	float distance = norm(cell, impactPoint);
+
+	return force / (distance + 1);
+}
+
+bool isCracked(sf::Vector2f i1, sf::Vector2f i2, float durability)
+{
+	float distance = norm(i1, i2);
+
+	if (distance > durability) return true;
+	
+	return false;
+}
+
+float norm(sf::Vector2f v1, sf::Vector2f v2)
+{
+	sf::Vector2f diff = v1 - v2;
+	float distance = (std::sqrt(diff.x * diff.x + diff.y * diff.y));
 }
