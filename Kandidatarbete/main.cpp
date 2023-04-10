@@ -89,13 +89,24 @@ void shatterFragment(Fragment fragment, sf::Vector2f impactPoint, float force)
 	{
 		Cell cell = fragment.cells[i];
 		cell.visited = false;
+
+		vector<Cell*> removing = vector<Cell*>();
 		for (int j = 0; j < cell.neighbours.size(); j++)
 		{
-			if (cell.neighbours[j]->fragment == &fragment)
+			Cell n = *cell.neighbours[j];
+			if (n.fragment == &fragment)
 			{
+				removing.push_back(&n);
 				// remove n from s.neighbours
 			}
 		}
+
+		for (int j = 0; j < removing.size(); j++)
+		{
+			remove(cell.neighbours.begin(), cell.neighbours.end(), removing[j]);
+		}
+
+		removing.clear();
 	}
 	vector<Fragment> L = vector<Fragment>();
 
