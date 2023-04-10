@@ -19,7 +19,7 @@ public:
 	float mass = 1;
 	void merge(Fragment fragment)
 	{
-
+		this->cells.insert(this->cells.end(), fragment.cells.begin(), fragment.cells.end());
 	}
 private:
 };
