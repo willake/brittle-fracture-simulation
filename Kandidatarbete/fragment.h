@@ -8,6 +8,22 @@
 #include <SFML/Graphics.hpp>
 using namespace std;
 
+class Cell;
+
+struct Material
+{
+public:
+	Material(float shatterLocality, float durability)
+	{
+		this->durability = durability;
+		this->shatterLocality = shatterLocality;
+	}
+	float durability;
+	float shatterLocality;
+private:
+
+};
+
 class Fragment
 {
 public:
@@ -39,18 +55,4 @@ public:
 	Fragment* fragment;
 	bool visited;
 private:
-};
-
-struct Material
-{
-public:
-	Material(float shatterLocality, float durability) 
-	{
-		this->durability = durability;
-		this->shatterLocality = shatterLocality;
-	}
-	float durability;
-	float shatterLocality;
-private:
-
 };

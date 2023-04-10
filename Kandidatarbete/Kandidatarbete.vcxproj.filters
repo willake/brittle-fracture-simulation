@@ -26,5 +26,8 @@
     <ClInclude Include="voronoi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="fragment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

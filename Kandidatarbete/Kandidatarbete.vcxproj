@@ -127,6 +127,7 @@
     <ClCompile Include="voronoi.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="fragment.h" />
     <ClInclude Include="voronoi.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

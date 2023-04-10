@@ -159,5 +159,5 @@ float shatterFactor(Cell *cell, sf::Vector2f impactPoint, float force, Material 
 float norm(sf::Vector2f v1, sf::Vector2f v2)
 {
 	sf::Vector2f diff = v1 - v2;
-	float distance = (std::sqrt(diff.x * diff.x + diff.y * diff.y));
+	return std::sqrt(diff.x * diff.x + diff.y * diff.y);
 }
