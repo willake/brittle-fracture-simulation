@@ -48,10 +48,11 @@ public:
 		edges.clear();
 		for (int i = 0; i < 100; i++)
 		{
-			VoronoiPoint p = VoronoiPoint(rand() % 500, rand() % 500);
-			ver.push_back(&p);
-			vMap[std::make_tuple(int(p.x), int(p.y))] = i;
-			cells.push_back(Cell(sf::Vector2f(p.x, p.y), &fragment));
+			float x = rand() % 500;
+			float y = rand() % 500;
+			ver.push_back(new VoronoiPoint(x, y));
+			vMap[std::make_tuple(int(x), int(y))] = i;
+			cells.push_back(Cell(sf::Vector2f(x, y), &fragment));
 		}
 
 		// generate voronoi diagram
