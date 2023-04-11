@@ -78,7 +78,6 @@ void drawScene(sf::RenderWindow &window, Scene* scene)
 			}
 		}
 	}
-
 	window.clear();
 	for (auto line : lines)
 		window.draw(line, 2, sf::Lines);

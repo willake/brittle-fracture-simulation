@@ -8,6 +8,7 @@ using namespace std;
 
 class CellEdge;
 class Cell;
+class Fragment;
 
 struct Material
 {
@@ -21,23 +22,6 @@ public:
 	float shatterLocality;
 private:
 
-};
-
-class Fragment
-{
-public:
-	Fragment()
-	{
-	}
-	vector<Cell*> cells = {};
-	Material material = Material(1, 1);
-	float mass = 1;
-	sf::Vector2f velocity;
-	void merge(Fragment* fragment)
-	{
-		this->cells.insert(this->cells.end(), fragment->cells.begin(), fragment->cells.end());
-	}
-private:
 };
 
 class Cell
@@ -57,6 +41,29 @@ public:
 	vector<Cell*> neighbours;
 	Fragment* fragment;
 	bool visited;
+private:
+};
+
+class Fragment
+{
+public:
+	Fragment()
+	{
+	}
+	vector<Cell*> cells = {};
+	Material material = Material(1, 0.05);
+	float mass = 1;
+	sf::Vector2f velocity;
+	void merge(Fragment* fragment)
+	{
+		this->cells.insert(this->cells.end(), fragment->cells.begin(), fragment->cells.end());
+
+		// assign parent fragment to the new one
+		for (int i = 0; i < fragment->cells.size(); i++)
+		{
+			fragment->cells[i]->fragment = this;
+		}
+	}
 private:
 };
 

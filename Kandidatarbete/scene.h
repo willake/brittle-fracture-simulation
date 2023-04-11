@@ -116,11 +116,11 @@ public:
 	{
 		// find points near the impact point
 		// call shatter fragment
-		shatterFragment(fragments[0], sf::Vector2f(x, y), force);
+		fragments = shatterFragment(fragments[0], sf::Vector2f(x, y), force);
 		printf("shatter fragment\n");
 	}
 
-	void shatterFragment(Fragment* fragment, sf::Vector2f impactPoint, const float force)
+	vector<Fragment*> shatterFragment(Fragment* fragment, sf::Vector2f impactPoint, const float force)
 	{
 		for (int i = 0; i < fragment->cells.size(); i++)
 		{
@@ -152,31 +152,32 @@ public:
 			Cell* cell = fragment->cells[i];
 			if (cell->visited == false)
 			{
-				Fragment* R = extractSubfragment(cell, impactPoint, force, fragment->material);
+				Fragment* R = extractSubfragment(cell, impactPoint, force, fragment->material, 0);
 				// copy any additional properties from original fragment to new fragment
 				R->mass = fragment->mass;
 				R->material = fragment->material;
 				L.push_back(R);
 			}
 		}
+		return L;
 	}
 
-	Fragment* extractSubfragment(Cell* cell, sf::Vector2f impactPoint, const float force, const Material material)
+	Fragment* extractSubfragment(Cell* cell, sf::Vector2f impactPoint, const float force, const Material material, int depth)
 	{
-		cell->visited = true;
 		Fragment* R = new Fragment();
 		R->material = material;
+		if (cell->visited) return R;
 		R->cells.push_back(cell);
 		cell->fragment = R;
-
+		cell->visited = true;
 		for (int i = 0; i < cell->neighbours.size(); i++)
 		{
 			float factorA = shatterFactor(cell, impactPoint, force, material);
 			float factorB = shatterFactor(cell->neighbours[i], impactPoint, force, material);
 
-			if (abs(factorA - factorB) > material.durability)
+			if (abs(factorA - factorB) > material.durability && depth < 5)
 			{
-				R->merge(extractSubfragment(cell->neighbours[i], impactPoint, force, material));
+				R->merge(extractSubfragment(cell->neighbours[i], impactPoint, force, material, depth + 1));
 			}
 
 		}
