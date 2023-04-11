@@ -3,15 +3,16 @@
 #include "scene.h"
 #include "voronoi.h"
 
-Scene scene;
+Scene* scene;
 
 // https://www.sfml-dev.org/tutorials/2.5/system-time.php
 sf::Clock gameClock;
 
-void drawScene(sf::RenderWindow &window, Scene scene);
+void drawScene(sf::RenderWindow &window, Scene* scene);
 
 int main()
 {
+	scene = new Scene();
 	sf::RenderWindow window(sf::VideoMode(500, 500), "SFML works!");
 	
 	while (window.isOpen())
@@ -25,7 +26,7 @@ int main()
 					if (event.mouseButton.button == sf::Mouse::Left)
 					{
 						std::cout << event.mouseButton.x << " " << event.mouseButton.y << '\n';
-						scene.handleImpact(event.mouseButton.x, event.mouseButton.y, 10);
+						scene->handleImpact(event.mouseButton.x, event.mouseButton.y, 10);
 					}
 					break;
 				case sf::Event::Closed:
@@ -40,14 +41,14 @@ int main()
 		}
 
 		sf::Time elapsed = gameClock.restart();
-		scene.intergrate(elapsed.asSeconds());
+		scene->intergrate(elapsed.asSeconds());
 		drawScene(window, scene);
 	}
 
 	return 0; 
 }
 
-void drawScene(sf::RenderWindow &window, Scene scene)
+void drawScene(sf::RenderWindow &window, Scene* scene)
 {
 	std::vector<sf::Vertex*> lines;
 
@@ -61,9 +62,9 @@ void drawScene(sf::RenderWindow &window, Scene scene)
 	}
 	*/
 
-	for (int i = 0; i < scene.fragments.size(); i++)
+	for (int i = 0; i < scene->fragments.size(); i++)
 	{
-		Fragment* fragment = scene.fragments[i];
+		Fragment* fragment = scene->fragments[i];
 		for (int j = 0; j < fragment->cells.size(); j++)
 		{
 			Cell* cell = fragment->cells[j];

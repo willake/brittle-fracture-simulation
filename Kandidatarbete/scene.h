@@ -39,7 +39,8 @@ public:
 	{
 		// for saving index or vertecies, users can search index by vertex position 
 		VertexMap vMap = {};
-		Fragment fragment = {};
+		fragments.push_back(new Fragment());
+		Fragment* fragment = fragments[0];
 		//FORTUNES ALGORITHM
 		for (vector<VoronoiPoint*>::iterator i = ver.begin(); i != ver.end(); i++)
 			delete((*i));
@@ -51,7 +52,7 @@ public:
 			float y = rand() % 500;
 			ver.push_back(new VoronoiPoint(x, y));
 			vMap[std::make_tuple(int(x), int(y))] = i;
-			fragment.cells.push_back(new Cell(sf::Vector2f(x, y), &fragment));
+			fragment->cells.push_back(new Cell(sf::Vector2f(x, y), fragment));
 		}
 
 		// generate voronoi diagram
@@ -69,18 +70,16 @@ public:
 			// get left cell index 
 			VoronoiPoint leftCell = edge.Left_Site;
 			int leftCellIdx = vMap[std::make_tuple(int(leftCell.x), int(leftCell.y))];
-			fragment.cells[leftCellIdx]->edges.push_back(CellEdge(edge));
+			fragment->cells[leftCellIdx]->edges.push_back(CellEdge(edge));
 
 			// get right cell index 
 			VoronoiPoint rightCell = edge.Right_Site;
 			int rightCellIdx = vMap[std::make_tuple(int(rightCell.x), int(rightCell.y))];
-			fragment.cells[rightCellIdx]->edges.push_back(CellEdge(edge));
+			fragment->cells[rightCellIdx]->edges.push_back(CellEdge(edge));
 
-			fragment.cells[leftCellIdx]->neighbours.push_back(fragment.cells[rightCellIdx]);
-			fragment.cells[rightCellIdx]->neighbours.push_back(fragment.cells[leftCellIdx]);
+			fragment->cells[leftCellIdx]->neighbours.push_back(fragment->cells[rightCellIdx]);
+			fragment->cells[rightCellIdx]->neighbours.push_back(fragment->cells[leftCellIdx]);
 		}
-
-		fragments.push_back(&fragment);
 		printf("hi");
 		// TODO: fit the voronoi diagram to the fragment structure as the paper
 	}
