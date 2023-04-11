@@ -50,7 +50,7 @@ int main()
 
 void drawScene(sf::RenderWindow &window, Scene* scene)
 {
-	std::vector<sf::Vertex*> lines;
+	std::vector<sf::Vector2f> triangles;
 
 	/*
 	for (int i = 0; i < scene.edges.size(); i++)
@@ -68,18 +68,15 @@ void drawScene(sf::RenderWindow &window, Scene* scene)
 		for (int j = 0; j < fragment->cells.size(); j++)
 		{
 			Cell* cell = fragment->cells[j];
-			for (int k = 0; k < cell->edges.size(); k++)
+			for (int k = 0; k < cell->faces.size(); k++)
 			{
-				CellEdge* edge = &cell->edges[k];
-				sf::Vertex* line = new sf::Vertex[2];
-				line[0] = edge->v1;
-				line[1] = edge->v2; 
-				lines.push_back(line);
+				triangles.push_back(cell->vertices[cell->faces[k].v1]);
+				triangles.push_back(cell->vertices[cell->faces[k].v2]);
+				triangles.push_back(cell->vertices[cell->faces[k].v3]);
 			}
 		}
 	}
 	window.clear();
-	for (auto line : lines)
-		window.draw(line, 2, sf::Lines);
+	window.draw(triangles, 3, sf::Triangles);
 	window.display();
 }

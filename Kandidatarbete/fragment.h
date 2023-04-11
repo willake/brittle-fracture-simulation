@@ -5,20 +5,24 @@
 #include <vector>
 #include "voronoi.h"
 #include "unordered_set"
+#include "unordered_map"
 using namespace std;
 
 class CellEdge;
 class Cell;
 class Fragment;
-typedef tuple<int, int> IndexEdge;
-struct Face;
-using EdgeList = vector<IndexEdge>;
-using VertexEdgesMap = unordered_map<int, EdgeList>;
 
+struct IndexEdge
+{
+	int v1, v2;
+};
 struct Face
 {
 	int v1, v2, v3;
 };
+
+using EdgeList = vector<IndexEdge>;
+using VertexEdgesMap = unordered_map<int, EdgeList>;
 
 struct Material
 {
@@ -46,12 +50,31 @@ public:
 		this->visited = false;
 	}
 
+	struct key_hash : public std::unary_function <sf::Vector2f, std::size_t >
+	{
+		std::size_t operator()(const sf::Vector2f& k) const
+		{
+			return k.x * k.y;
+		}
+	};
+
+	struct  key_equal : public std::binary_function<sf::Vector2f, sf::Vector2f, bool>
+	{
+		bool operator()(const sf::Vector2f& v0, const sf::Vector2f& v1) const
+		{
+			return (
+				int(v0.x) == int(v1.x) &&
+				int(v0.y) == int(v1.y)
+				);
+		}
+	};
+
 	void setEdges(vector<CellEdge> edges)
 	{
 		// find all neighbour edges
 		// two neighbour edges form a triangle, which is a face
 		// a face is a three of vertice index, which is a triangle
-		unordered_set<sf::Vector2f> vertexSet = {};
+		unordered_set<sf::Vector2f, key_hash, key_equal> vertexSet = {};
 		// find all vertices
 		for (int i = 0; i < edges.size(); i++)
 		{
@@ -79,37 +102,38 @@ public:
 				int x2 = int(vertices[j].x), y2 = int(vertices[j].y);
 				if (x1 == x2 && y1 == y2) v1Idx = j;
 			}
-
-			edgeList.push_back(make_tuple(v1Idx, v2Idx));
+			IndexEdge edge = { v1Idx, v2Idx };
+			edgeList.push_back(edge);
 		}
 
 		VertexEdgesMap vertexEdges;
 		for (int i = 0; i < edgeList.size(); i++)
 		{
-			vertexEdges[std::get<0>(edgeList[i])].push_back(edgeList[i]);
-			vertexEdges[std::get<1>(edgeList[i])].push_back(edgeList[i]);
+			vertexEdges[edgeList[i].v1].push_back(edgeList[i]);
+			vertexEdges[edgeList[i].v2].push_back(edgeList[i]);
 		}
 		
 		faces = {};
 		for (int i = 0; i < edgeList.size(); i++)
 		{
-			EdgeList edges1 = vertexEdges[std::get<0>(edgeList[i])];
-			EdgeList edges2 = vertexEdges[std::get<1>(edgeList[i])];
+			IndexEdge edge = edgeList[i];
+			EdgeList edges1 = vertexEdges[edge.v1];
+			EdgeList edges2 = vertexEdges[edge.v2];
 
-			for (const tuple<int, int>& adjacentEdge1 : edges1)
+			for (const IndexEdge& adjacentEdge1 : edges1)
 			{
-				if (get<0>(adjacentEdge1) == get<0>(edgeList[i]) || get<1>(adjacentEdge1) == get<0>(edgeList[i]))
+				if (adjacentEdge1.v1 == edge.v1 || adjacentEdge1.v2 == edge.v1)
 				{
-					for (const tuple<int, int>& adjacentEdge2 : edges2)
+					for (const IndexEdge& adjacentEdge2 : edges2)
 					{
-						if (get<0>(adjacentEdge2) == get<1>(edgeList[i]) || get<1>(adjacentEdge1) == get<1>(edgeList[i]))
+						if (adjacentEdge2.v1 == edge.v2 || adjacentEdge2.v2 == edge.v2)
 						{
 							Face face = {
-								get<0>(edgeList[i]),
-								get<1>(edgeList[i]),
-								(get<0>(adjacentEdge1) == get<0>(edgeList[i])
-								|| get<1>(adjacentEdge1) == get<0>(edgeList[i]))
-								? get<1>(adjacentEdge1) : get<0>(adjacentEdge1)
+								edge.v1,
+								edge.v2,
+								(adjacentEdge1.v1 == edge.v1
+								|| adjacentEdge1.v2 == edge.v1)
+								? adjacentEdge1.v2 : adjacentEdge1.v1
 							};
 							faces.push_back(face);
 						}
@@ -118,12 +142,13 @@ public:
 			}
 		}
 
+		edges.clear();
 		printf("hi");
 	}
 	sf::Vector2f site;
 	vector<sf::Vector2f> vertices;
 	vector<Face> faces;
-	//vector<CellEdge> edges;
+	vector<CellEdge> edges;
 	vector<Cell*> neighbours;
 	Fragment* fragment;
 	bool visited;
