@@ -49,11 +49,13 @@ class Fragment
 public:
 	Fragment()
 	{
+		COM = sf::Vector2f(0, 0);
 	}
 	vector<Cell*> cells = {};
 	Material material = Material(1, 0.05);
 	float mass = 1;
 	sf::Vector2f velocity;
+	sf::Vector2f COM;
 	void merge(Fragment* fragment)
 	{
 		this->cells.insert(this->cells.end(), fragment->cells.begin(), fragment->cells.end());

@@ -116,7 +116,17 @@ public:
 	{
 		// find points near the impact point
 		// call shatter fragment
-		fragments = shatterFragment(fragments[0], sf::Vector2f(x, y), force);
+		vector<Fragment*> globalFrags;
+		for (int i = 0; i < fragments.size(); i++)
+		{
+			vector<Fragment*> frags = shatterFragment(fragments[i], sf::Vector2f(x, y), force);
+			
+			for (int j = 0; j < frags.size(); j++)
+			{
+				globalFrags.push_back(frags[j]);
+			}
+		}
+		fragments = globalFrags;
 		printf("shatter fragment\n");
 	}
 
@@ -156,6 +166,7 @@ public:
 				// copy any additional properties from original fragment to new fragment
 				R->mass = fragment->mass;
 				R->material = fragment->material;
+				R->velocity = R->COM - impactPoint * 0.1f;
 				L.push_back(R);
 			}
 		}
@@ -182,6 +193,8 @@ public:
 
 		}
 
+		R->COM = calculateCOM(R->cells);
+
 		return R;
 	}
 
@@ -192,6 +205,21 @@ public:
 		float distance = norm(site, impactPoint);
 
 		return force / (pow(distance, material.shatterLocality) + 1);
+	}
+	
+	sf::Vector2f calculateCOM(vector<Cell*> cells)
+	{
+		float minX = 0, maxX = 0, minY = 0, maxY = 0;
+
+		for (int i = 0; i < cells.size(); i++)
+		{
+			minX = min(cells[i]->site.x, minX);
+			maxX = max(cells[i]->site.x, maxX);
+			minY = min(cells[i]->site.y, minY);
+			maxY = max(cells[i]->site.y, maxY);
+		}
+
+		return sf::Vector2f((minX + maxX) / 2, (minY + maxY) / 2);
 	}
 
 	float norm(sf::Vector2f v1, sf::Vector2f v2)
