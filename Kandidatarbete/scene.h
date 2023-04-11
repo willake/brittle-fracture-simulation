@@ -81,6 +81,11 @@ public:
 			fragment->cells[rightCellIdx]->neighbours.push_back(fragment->cells[leftCellIdx]);
 		}
 
+		for (int i = 0; i < fragment->cells.size(); i++)
+		{
+			fragment->cells[i]->setEdges(fragment->cells[i]->edges);
+		}
+
 
 		printf("Initialized\n");
 		// TODO: fit the voronoi diagram to the fragment structure as the paper

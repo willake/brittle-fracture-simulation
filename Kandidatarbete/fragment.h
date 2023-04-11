@@ -38,6 +38,23 @@ private:
 
 };
 
+class CellEdge
+{
+public:
+	CellEdge(VEdge& edge)
+	{
+		this->v1 = sf::Vector2f(edge.VertexA.x, edge.VertexA.y);
+		this->v2 = sf::Vector2f(edge.VertexB.x, edge.VertexB.y);
+	}
+	CellEdge(sf::Vector2f v1, sf::Vector2f v2)
+	{
+		this->v1 = v1;
+		this->v2 = v2;
+	}
+	sf::Vector2f v1;
+	sf::Vector2f v2;
+};
+
 class Cell
 {
 public:
@@ -100,7 +117,7 @@ public:
 			{
 				int x1 = int(edges[i].v2.x), y1 = int(edges[i].v2.y);
 				int x2 = int(vertices[j].x), y2 = int(vertices[j].y);
-				if (x1 == x2 && y1 == y2) v1Idx = j;
+				if (x1 == x2 && y1 == y2) v2Idx = j;
 			}
 			IndexEdge edge = { v1Idx, v2Idx };
 			edgeList.push_back(edge);
@@ -143,7 +160,6 @@ public:
 		}
 
 		edges.clear();
-		printf("hi");
 	}
 	sf::Vector2f site;
 	vector<sf::Vector2f> vertices;
@@ -178,21 +194,4 @@ public:
 		}
 	}
 private:
-};
-
-class CellEdge
-{
-public:
-	CellEdge(VEdge &edge)
-	{
-		this->v1 = sf::Vector2f(edge.VertexA.x, edge.VertexA.y);
-		this->v2 = sf::Vector2f(edge.VertexB.x, edge.VertexB.y);
-	}
-	CellEdge(sf::Vector2f v1, sf::Vector2f v2)
-	{
-		this->v1 = v1;
-		this->v2 = v2;
-	}
-	sf::Vector2f v1;
-	sf::Vector2f v2;
 };
