@@ -7,6 +7,7 @@
 class Scene
 {
 public:
+	bool clicked = false;
 	Voronoi* vdg;
 	vector<VoronoiPoint*> ver;
 	vector<VEdge> edges;
@@ -93,7 +94,10 @@ public:
 
 	void integrateVelocity(double timeStep)
 	{
+		for (int i = 0; i < fragments.size(); i++)
+		{
 
+		}
 	}
 
 	void integratePosition(double timeStep)
@@ -176,7 +180,7 @@ public:
 				// copy any additional properties from original fragment to new fragment
 				R->mass = fragment->mass;
 				R->material = fragment->material;
-				R->velocity = R->COM - impactPoint * 0.01f;
+				R->velocity = (R->COM - impactPoint) / norm(R->COM, impactPoint) * 0.1f;
 				L.push_back(R);
 			}
 		}

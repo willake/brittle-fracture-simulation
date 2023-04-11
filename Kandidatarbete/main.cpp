@@ -27,6 +27,7 @@ int main()
 					{
 						std::cout << event.mouseButton.x << " " << event.mouseButton.y << '\n';
 						scene->handleImpact(event.mouseButton.x, event.mouseButton.y, 10);
+						scene->clicked = true;
 					}
 					break;
 				case sf::Event::Closed:
@@ -50,31 +51,23 @@ int main()
 
 void drawScene(sf::RenderWindow &window, Scene* scene)
 {
-	std::vector<sf::Vertex*> triangles;
-
-	/*
-	for (int i = 0; i < scene.edges.size(); i++)
-	{
-		sf::Vertex* test = new sf::Vertex[2];
-		test[0] = sf::Vector2f((scene.edges[i].VertexA.x), (scene.edges[i].VertexA.y));
-		test[1] = sf::Vector2f((scene.edges[i].VertexB.x), (scene.edges[i].VertexB.y));
-		lines.push_back(test);
-	}
-	*/
 	window.clear();
-	for (int i = 0; i < scene->fragments.size(); i++)
+	if (scene->clicked)
 	{
-		Fragment* fragment = scene->fragments[i];
-		for (int j = 0; j < fragment->cells.size(); j++)
+		for (int i = 0; i < scene->fragments.size(); i++)
 		{
-			Cell* cell = fragment->cells[j];
-			for (int k = 0; k < cell->faces.size(); k++)
+			Fragment* fragment = scene->fragments[i];
+			for (int j = 0; j < fragment->cells.size(); j++)
 			{
-				sf::Vertex* triangle = new sf::Vertex[3];
-				triangle[0] = cell->vertices[cell->faces[k].v1];
-				triangle[1] = cell->vertices[cell->faces[k].v2];
-				triangle[2] = cell->vertices[cell->faces[k].v3];
-				window.draw(triangle, 3, sf::Triangles);
+				Cell* cell = fragment->cells[j];
+				for (int k = 0; k < cell->faces.size(); k++)
+				{
+					sf::Vertex* triangle = new sf::Vertex[3];
+					triangle[0] = cell->vertices[cell->faces[k].v1];
+					triangle[1] = cell->vertices[cell->faces[k].v2];
+					triangle[2] = cell->vertices[cell->faces[k].v3];
+					window.draw(triangle, 3, sf::Triangles);
+				}
 			}
 		}
 	}
