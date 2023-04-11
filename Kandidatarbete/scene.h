@@ -40,7 +40,7 @@ public:
 		// for saving index or vertecies, users can search index by vertex position 
 		VertexMap vMap = {};
 		Fragment fragment = {};
-		vector<Cell*> cells = {};
+		vector<Cell> cells = {};
 		//FORTUNES ALGORITHM
 		for (vector<VoronoiPoint*>::iterator i = ver.begin(); i != ver.end(); i++)
 			delete((*i));
@@ -51,7 +51,7 @@ public:
 			VoronoiPoint p = VoronoiPoint(rand() % 500, rand() % 500);
 			ver.push_back(&p);
 			vMap[std::make_tuple(int(p.x), int(p.y))] = i;
-			cells.push_back(new Cell(sf::Vector2f(p.x, p.y), &fragment));
+			cells.push_back(Cell(sf::Vector2f(p.x, p.y), &fragment));
 		}
 
 		// generate voronoi diagram
@@ -69,15 +69,15 @@ public:
 			// get left cell index 
 			VoronoiPoint leftCell = edge.Left_Site;
 			int leftCellIdx = vMap[std::make_tuple(int(leftCell.x), int(leftCell.y))];
-			cells[leftCellIdx]->edges.push_back(new CellEdge(edge));
+			cells[leftCellIdx].edges.push_back(CellEdge(edge));
 
 			// get right cell index 
 			VoronoiPoint rightCell = edge.Right_Site;
 			int rightCellIdx = vMap[std::make_tuple(int(rightCell.x), int(rightCell.y))];
-			cells[rightCellIdx]->edges.push_back(new CellEdge(edge));
+			cells[rightCellIdx].edges.push_back(CellEdge(edge));
 
-			cells[leftCellIdx]->neighbours.push_back(cells[rightCellIdx]);
-			cells[rightCellIdx]->neighbours.push_back(cells[leftCellIdx]);
+			cells[leftCellIdx].neighbours.push_back(&cells[rightCellIdx]);
+			cells[rightCellIdx].neighbours.push_back(&cells[leftCellIdx]);
 		}
 
 		fragment.cells = cells;
@@ -101,7 +101,7 @@ public:
 			Fragment fragment = fragments[i];
 			for (int j = 0; j < fragment.cells.size(); j++)
 			{
-				Cell* cell = fragment.cells[j];
+				Cell* cell = &fragment.cells[j];
 				cell->site += fragment.velocity;
 				// TODO: expect COM, we also need to update the vertices(or edges)
 			}
@@ -125,7 +125,7 @@ public:
 	{
 		for (int i = 0; i < fragment.cells.size(); i++)
 		{
-			Cell* cell = fragment.cells[i];
+			Cell* cell = &fragment.cells[i];
 			cell->visited = false;
 
 			vector<Cell*> removing = vector<Cell*>();
@@ -150,7 +150,7 @@ public:
 
 		for (int i = 0; i < fragment.cells.size(); i++)
 		{
-			Cell* cell = fragment.cells[i];
+			Cell* cell = &fragment.cells[i];
 			if (cell->visited == false)
 			{
 				Fragment R = extractSubfragment(cell, impactPoint, force, fragment.material);
@@ -162,22 +162,22 @@ public:
 		}
 	}
 
-	Fragment extractSubfragment(Cell &cell, sf::Vector2f impactPoint, const float force, const Material material)
+	Fragment extractSubfragment(Cell* cell, sf::Vector2f impactPoint, const float force, const Material material)
 	{
-		cell.visited = true;
+		cell->visited = true;
 		Fragment R = Fragment();
 		R.material = material;
-		R.cells->push_back(cell);
-		cell.fragment = &R;
+		R.cells.push_back(*cell);
+		cell->fragment = &R;
 
-		for (int i = 0; i < cell.neighbours.size(); i++)
+		for (int i = 0; i < cell->neighbours.size(); i++)
 		{
-			float factorA = shatterFactor(&cell, impactPoint, force, material);
-			float factorB = shatterFactor(cell.neighbours[i], impactPoint, force, material);
+			float factorA = shatterFactor(cell, impactPoint, force, material);
+			float factorB = shatterFactor(cell->neighbours[i], impactPoint, force, material);
 
 			if (abs(factorA - factorB) > material.durability)
 			{
-				R.merge(extractSubfragment(*cell.neighbours[i], impactPoint, force, material));
+				R.merge(extractSubfragment(cell->neighbours[i], impactPoint, force, material));
 			}
 
 		}
