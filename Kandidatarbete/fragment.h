@@ -63,10 +63,10 @@ private:
 class CellEdge
 {
 public:
-	CellEdge(VEdge edge)
+	CellEdge(VEdge &edge)
 	{
-		sf::Vector2f v1 = sf::Vector2f(edge.VertexA.x, edge.VertexA.y);
-		sf::Vector2f v2 = sf::Vector2f(edge.VertexB.x, edge.VertexB.y);
+		this->v1 = sf::Vector2f(edge.VertexA.x, edge.VertexA.y);
+		this->v2 = sf::Vector2f(edge.VertexB.x, edge.VertexB.y);
 	}
 	CellEdge(sf::Vector2f v1, sf::Vector2f v2)
 	{
