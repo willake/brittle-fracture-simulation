@@ -99,7 +99,6 @@ public:
 	void integratePosition(double timeStep)
 	{
 		// update fragement edges and cells according to velocity and timestep
-		return;
 
 		for (int i = 0; i < fragments.size(); i++)
 		{
@@ -108,6 +107,10 @@ public:
 			{
 				Cell* cell = fragment->cells[j];
 				cell->site += fragment->velocity;
+				for (int k = 0; k < cell->vertices.size(); k++)
+				{
+					cell->vertices[k] += fragment->velocity;
+				}
 				// TODO: expect COM, we also need to update the vertices(or edges)
 			}
 		}
@@ -173,7 +176,7 @@ public:
 				// copy any additional properties from original fragment to new fragment
 				R->mass = fragment->mass;
 				R->material = fragment->material;
-				R->velocity = R->COM - impactPoint * 0.1f;
+				R->velocity = R->COM - impactPoint * 0.01f;
 				L.push_back(R);
 			}
 		}
