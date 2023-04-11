@@ -101,6 +101,7 @@ public:
 		vertices.clear();
 		vertices.insert(vertices.end(), vertexSet.begin(), vertexSet.end());
 
+		// turing CellEdge to IdxEdge, which use vertex indices
 		EdgeList edgeList = {};
 		for (int i = 0; i < edges.size(); i++)
 		{
