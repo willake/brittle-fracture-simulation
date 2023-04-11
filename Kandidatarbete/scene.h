@@ -164,7 +164,7 @@ public:
 
 			for (int j = 0; j < removing.size(); j++)
 			{
-				remove(cell->neighbours.begin(), cell->neighbours.end(), removing[j]);
+				remove(cell->neighbours.begin(), cell->neighbours.end(), &removing[j]);
 			}
 
 			removing.clear();
