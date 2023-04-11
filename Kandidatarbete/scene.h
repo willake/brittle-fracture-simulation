@@ -41,6 +41,18 @@ public:
 	void integratePosition(double timeStep)
 	{
 		// update fragement edges and cells according to velocity and timestep
+		return;
+
+		for (int i = 0; i < fragments.size(); i++)
+		{
+			Fragment fragment = fragments[i];
+			for (int j = 0; j < fragment.cells.size(); j++)
+			{
+				Cell cell = fragment.cells[j];
+				cell.site += fragment.velocity;
+				// TODO: expect COM, we also need to update the vertices(or edges)
+			}
+		}
 	}
 
 	void intergrate(double timeStep)
