@@ -1,4 +1,4 @@
-# 2D Voronoi Fracture
-Creates a 2D Voronoi tessellation to create fractures. Created for the purpose of our bachelor's thesis: [CPU Performance Evaluation for 2D Voronoi Tessellation](http://urn.kb.se/resolve?urn=urn:nbn:se:bth-18259)
+# Brittle Fracture Simulation
+This is the final project for INFOMGP course at Utrecht University in 2023. We implemented the fracture simulation based on the paper: [An Efficient Algorithm for Brittle Fracture Simulation](https://github.com/milesbarr/brittle-fracture-simulation/blob/main/paper.pdf).
 
-![alt text](https://github.com/Vekzzor/2D-Voronoi-Fracture/blob/master/VoronoiExampleAA.png "Voronoi tesselation with 12 sample points")
+Since we did not implemented voronoi diagram by ourselfs, we extended the project file from ![Base](https://github.com/Vekzzor/2D-Voronoi-Fracture/).
