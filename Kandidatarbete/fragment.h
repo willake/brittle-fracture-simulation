@@ -140,22 +140,45 @@ public:
 
 			for (const IndexEdge& adjacentEdge1 : edges1)
 			{
-				if (adjacentEdge1.v1 == edge.v1 || adjacentEdge1.v2 == edge.v1)
+				if (adjacentEdge1.v1 == edge.v1)
 				{
-					for (const IndexEdge& adjacentEdge2 : edges2)
-					{
-						if (adjacentEdge2.v1 == edge.v2 || adjacentEdge2.v2 == edge.v2)
-						{
-							Face face = {
-								edge.v1,
-								edge.v2,
-								(adjacentEdge1.v1 == edge.v1
-								|| adjacentEdge1.v2 == edge.v1)
-								? adjacentEdge1.v2 : adjacentEdge1.v1
-							};
-							faces.push_back(face);
-						}
-					}
+					Face face = {
+						edge.v1,
+						edge.v2,
+						adjacentEdge1.v2
+					};
+					faces.push_back(face);
+				}
+				else if (adjacentEdge1.v2 == edge.v1)
+				{
+					Face face = {
+						edge.v1,
+						edge.v2,
+						adjacentEdge1.v1
+					};
+					faces.push_back(face);
+				}
+			}
+
+			for (const IndexEdge& adjacentEdge2 : edges2)
+			{
+				if (adjacentEdge2.v1 == edge.v2)
+				{
+					Face face = {
+						edge.v1,
+						edge.v2,
+						adjacentEdge2.v2
+					};
+					faces.push_back(face);
+				}
+				else if (adjacentEdge2.v2 == edge.v2)
+				{
+					Face face = {
+						edge.v1,
+						edge.v2,
+						adjacentEdge2.v1
+					};
+					faces.push_back(face);
 				}
 			}
 		}
