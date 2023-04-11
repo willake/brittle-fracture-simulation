@@ -29,7 +29,7 @@ public:
 	Fragment()
 	{
 	}
-	vector<Cell> cells = {};
+	vector<Cell*> cells = {};
 	Material material = Material(1, 1);
 	float mass = 1;
 	sf::Vector2f velocity;
