@@ -80,7 +80,7 @@ public:
 			fragment->cells[leftCellIdx]->neighbours.push_back(fragment->cells[rightCellIdx]);
 			fragment->cells[rightCellIdx]->neighbours.push_back(fragment->cells[leftCellIdx]);
 		}
-		printf("hi");
+		printf("Initialized\n");
 		// TODO: fit the voronoi diagram to the fragment structure as the paper
 	}
 
@@ -117,6 +117,7 @@ public:
 		// find points near the impact point
 		// call shatter fragment
 		shatterFragment(fragments[0], sf::Vector2f(x, y), force);
+		printf("shatter fragment\n");
 	}
 
 	void shatterFragment(Fragment* fragment, sf::Vector2f impactPoint, const float force)
@@ -151,22 +152,22 @@ public:
 			Cell* cell = fragment->cells[i];
 			if (cell->visited == false)
 			{
-				Fragment R = extractSubfragment(cell, impactPoint, force, fragment->material);
+				Fragment* R = extractSubfragment(cell, impactPoint, force, fragment->material);
 				// copy any additional properties from original fragment to new fragment
-				R.mass = fragment->mass;
-				R.material = fragment->material;
-				L.push_back(&R);
+				R->mass = fragment->mass;
+				R->material = fragment->material;
+				L.push_back(R);
 			}
 		}
 	}
 
-	Fragment extractSubfragment(Cell* cell, sf::Vector2f impactPoint, const float force, const Material material)
+	Fragment* extractSubfragment(Cell* cell, sf::Vector2f impactPoint, const float force, const Material material)
 	{
 		cell->visited = true;
-		Fragment R = Fragment();
-		R.material = material;
-		R.cells.push_back(cell);
-		cell->fragment = &R;
+		Fragment* R = new Fragment();
+		R->material = material;
+		R->cells.push_back(cell);
+		cell->fragment = R;
 
 		for (int i = 0; i < cell->neighbours.size(); i++)
 		{
@@ -175,7 +176,7 @@ public:
 
 			if (abs(factorA - factorB) > material.durability)
 			{
-				R.merge(extractSubfragment(cell->neighbours[i], impactPoint, force, material));
+				R->merge(extractSubfragment(cell->neighbours[i], impactPoint, force, material));
 			}
 
 		}

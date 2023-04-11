@@ -33,9 +33,9 @@ public:
 	Material material = Material(1, 1);
 	float mass = 1;
 	sf::Vector2f velocity;
-	void merge(Fragment fragment)
+	void merge(Fragment* fragment)
 	{
-		this->cells.insert(this->cells.end(), fragment.cells.begin(), fragment.cells.end());
+		this->cells.insert(this->cells.end(), fragment->cells.begin(), fragment->cells.end());
 	}
 private:
 };
