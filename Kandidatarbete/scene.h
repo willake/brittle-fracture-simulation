@@ -94,9 +94,12 @@ public:
 
 	void integrateVelocity(double timeStep)
 	{
-		for (int i = 0; i < fragments.size(); i++)
+		if (clicked)
 		{
-
+			for (int i = 0; i < fragments.size(); i++)
+			{
+				fragments[i]->velocity -= sf::Vector2f(0, -9.8) * 0.1f * float(timeStep);
+			}
 		}
 	}
 
@@ -164,7 +167,7 @@ public:
 
 			for (int j = 0; j < removing.size(); j++)
 			{
-				remove(cell->neighbours.begin(), cell->neighbours.end(), &removing[j]);
+				remove(cell->neighbours.begin(), cell->neighbours.end(), removing[j]);
 			}
 
 			removing.clear();
