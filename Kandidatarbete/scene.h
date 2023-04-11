@@ -80,6 +80,8 @@ public:
 			fragment->cells[leftCellIdx]->neighbours.push_back(fragment->cells[rightCellIdx]);
 			fragment->cells[rightCellIdx]->neighbours.push_back(fragment->cells[leftCellIdx]);
 		}
+
+
 		printf("Initialized\n");
 		// TODO: fit the voronoi diagram to the fragment structure as the paper
 	}
