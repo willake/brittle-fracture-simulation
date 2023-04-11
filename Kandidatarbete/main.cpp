@@ -1,6 +1,7 @@
-
+#pragma once
 #include <SFML/Graphics.hpp>
 #include "scene.h"
+#include "voronoi.h"
 
 Scene scene;
 

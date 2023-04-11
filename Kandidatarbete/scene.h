@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "voronoi.h"
 #include "fragment.h"
+#include <unordered_map>
 
 class Scene
 {
@@ -11,8 +12,35 @@ public:
 	vector<VEdge> edges;
 	vector<Fragment> fragments;
 
+	typedef std::tuple<int, int> key_t;
+
+	struct key_hash : public std::unary_function<key_t, std::size_t>
+	{
+		std::size_t operator()(const key_t& k) const
+		{
+			return std::get<0>(k) ^ std::get<1>(k);
+		}
+	};
+
+	struct  key_equal : public std::binary_function<key_t, key_t, bool>
+	{
+		bool operator()(const key_t& v0, const key_t& v1) const
+		{
+			return (
+					std::get<0>(v0) == std::get<0>(v1) &&
+					std::get<1>(v0) == std::get<1>(v1)
+				);
+		}
+	};
+
+	typedef std::unordered_map<key_t, int, key_hash, key_equal> VertexMap;
+
 	Scene()
 	{
+		// for saving index or vertecies, users can search index by vertex position 
+		VertexMap vMap = {};
+		Fragment fragment = {};
+		vector<Cell*> cells = {};
 		//FORTUNES ALGORITHM
 		for (vector<VoronoiPoint*>::iterator i = ver.begin(); i != ver.end(); i++)
 			delete((*i));
@@ -20,7 +48,10 @@ public:
 		edges.clear();
 		for (int i = 0; i < 100; i++)
 		{
-			ver.push_back(new VoronoiPoint(rand() % 500, rand() % 500));
+			VoronoiPoint p = VoronoiPoint(rand() % 500, rand() % 500);
+			ver.push_back(&p);
+			vMap[std::make_tuple(int(p.x), int(p.y))] = i;
+			cells.push_back(new Cell(sf::Vector2f(p.x, p.y), &fragment));
 		}
 
 		// generate voronoi diagram
@@ -30,6 +61,28 @@ public:
 		edges = vdg->ComputeVoronoiGraph(ver, minY, maxY);
 		delete vdg;
 
+		// loop through all edges, put in to corresponding cell and find neighbours
+		for (int i = 0; i < edges.size(); i++)
+		{
+			VEdge edge = edges[i];
+			
+			// get left cell index 
+			VoronoiPoint leftCell = edge.Left_Site;
+			int leftCellIdx = vMap[std::make_tuple(int(leftCell.x), int(leftCell.y))];
+			cells[leftCellIdx]->edges.push_back(new CellEdge(edge));
+
+			// get right cell index 
+			VoronoiPoint rightCell = edge.Right_Site;
+			int rightCellIdx = vMap[std::make_tuple(int(rightCell.x), int(rightCell.y))];
+			cells[rightCellIdx]->edges.push_back(new CellEdge(edge));
+
+			cells[leftCellIdx]->neighbours.push_back(cells[rightCellIdx]);
+			cells[rightCellIdx]->neighbours.push_back(cells[leftCellIdx]);
+		}
+
+		fragment.cells = cells;
+		fragments.push_back(fragment);
+		printf("hi");
 		// TODO: fit the voronoi diagram to the fragment structure as the paper
 	}
 
@@ -48,8 +101,8 @@ public:
 			Fragment fragment = fragments[i];
 			for (int j = 0; j < fragment.cells.size(); j++)
 			{
-				Cell cell = fragment.cells[j];
-				cell.site += fragment.velocity;
+				Cell* cell = fragment.cells[j];
+				cell->site += fragment.velocity;
 				// TODO: expect COM, we also need to update the vertices(or edges)
 			}
 		}
@@ -72,13 +125,13 @@ public:
 	{
 		for (int i = 0; i < fragment.cells.size(); i++)
 		{
-			Cell cell = fragment.cells[i];
-			cell.visited = false;
+			Cell* cell = fragment.cells[i];
+			cell->visited = false;
 
 			vector<Cell*> removing = vector<Cell*>();
-			for (int j = 0; j < cell.neighbours.size(); j++)
+			for (int j = 0; j < cell->neighbours.size(); j++)
 			{
-				Cell n = *cell.neighbours[j];
+				Cell n = *cell->neighbours[j];
 				if (n.fragment == &fragment)
 				{
 					removing.push_back(&n);
@@ -88,7 +141,7 @@ public:
 
 			for (int j = 0; j < removing.size(); j++)
 			{
-				remove(cell.neighbours.begin(), cell.neighbours.end(), removing[j]);
+				remove(cell->neighbours.begin(), cell->neighbours.end(), removing[j]);
 			}
 
 			removing.clear();
@@ -97,8 +150,8 @@ public:
 
 		for (int i = 0; i < fragment.cells.size(); i++)
 		{
-			Cell cell = fragment.cells[i];
-			if (cell.visited == false)
+			Cell* cell = fragment.cells[i];
+			if (cell->visited == false)
 			{
 				Fragment R = extractSubfragment(cell, impactPoint, force, fragment.material);
 				// copy any additional properties from original fragment to new fragment
@@ -109,12 +162,12 @@ public:
 		}
 	}
 
-	Fragment extractSubfragment(Cell cell, sf::Vector2f impactPoint, const float force, const Material material)
+	Fragment extractSubfragment(Cell &cell, sf::Vector2f impactPoint, const float force, const Material material)
 	{
 		cell.visited = true;
 		Fragment R = Fragment();
 		R.material = material;
-		R.cells.push_back(cell);
+		R.cells->push_back(cell);
 		cell.fragment = &R;
 
 		for (int i = 0; i < cell.neighbours.size(); i++)
